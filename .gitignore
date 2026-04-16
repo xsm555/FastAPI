@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+ENV/
+env/
+.env  # 重要：不要上传本地环境变量文件
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Docker
+# 不要上传数据卷，那是运行时的
+db_data/
+
+# OS
+.DS_Store
+Thumbs.db
+.backup_data.sql
+
+# Logs
+*.log

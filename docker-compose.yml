@@ -1,0 +1,44 @@
+
+services:
+  # 1. 后端应用服务 (开发模式，带热重载)
+  # 注意：这里的名字叫 app
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    
+    environment:
+      # 【关键】数据库地址指向 db 服务
+      - DATABASE_URL=mysql+aiomysql://dev_user:412530@db:3306/ecommerce_db
+    # 【关键】挂载代码目录，实现热重载
+    volumes:
+      - .:/code # Windows下如果报错找不到文件，改成 - ${PWD}:/code
+    depends_on:
+      db:
+        condition: service_healthy 
+
+  # 2. 数据库服务 (保留)
+  db:
+    image: mysql:8.0
+    container_name: ecommerce_db
+    environment:
+      MYSQL_ROOT_PASSWORD: RootSuperSecret!@#412530
+      MYSQL_DATABASE: ecommerce_db
+      MYSQL_USER: dev_user
+      MYSQL_PASSWORD: YourStrongPassword123!
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    command: --default-authentication-plugin=mysql_native_password
+
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "dev_user", "-pYourStrongPassword123!"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+# 注意：这里故意没有写 api 服务，因为它会占用端口且配置复杂，干扰开发。
+
+volumes:
+  db_data:
